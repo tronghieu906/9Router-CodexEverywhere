@@ -1,0 +1,16 @@
+model_provider = "9router"
+model = "ce/gpt-5.6-terra"
+model_catalog_json = 'C:\Users\<Username>\.codex\model_catalog.json'
+requires_openai_auth = false
+
+[model_providers.9router]
+name = "9Router"
+base_url = "http://127.0.0.1:20128/v1"
+wire_api = "responses"
+requires_openai_auth = false
+
+[model_providers.9router.http_headers]
+Authorization = "Bearer sk-5e80ddbe7401abd4-3lwsxb-9fbd47b5"
+
+[agents]
+default_subagent_model = "ce/gpt-5.6-terra"

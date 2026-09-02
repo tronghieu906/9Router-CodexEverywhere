@@ -153,15 +153,6 @@ On every single prompt, Codex Desktop dispatches **TWO parallel requests**:
 1. **Primary Turn (User Prompt):** Runs on whichever model you selected in the UI dropdown (e.g. `GPT-5.6 Terra`).
 2. **Background Helper Agent:** Codex automatically triggers a background agent to generate **thread titles**, **ambient suggestions**, and **memory summaries**. This background agent uses the default model set in `config.toml` (`default_subagent_model` / `model`).
 
-### The Solution:
-If you want both the main chat and all background helper tasks to use the same model, set `default_subagent_model` to match your active model in `config.toml`:
-```toml
-model = "ce/gpt-5.6-terra"
-
-[agents]
-default_subagent_model = "ce/gpt-5.6-terra"
-```
-
 ---
 
 ## ⚡ Common Errors & Fixes Reference Table

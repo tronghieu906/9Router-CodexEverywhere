@@ -1,43 +1,40 @@
-# 🚀 9Router + OpenAI Codex Desktop Integration Guide
+# 🚀 9Router + CodexEverywhere Integration Guide
 
-A complete setup guide, configuration reference, and troubleshooting guide for connecting custom LLM providers and models through [9Router](https://github.com/decolua/9router) into the **OpenAI Codex Desktop App** (and Codex CLI).
+A concise, step-by-step setup guide for routing **CodexEverywhere** models (e.g., `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.6-luna`) through **9Router** into the **OpenAI Codex Desktop App**.
 
----
-
-## 🏗️ Architecture Overview
-
-Codex Desktop and 9Router work together as a translation bridge:
-
-```text
-┌─────────────────────────┐
-│   Codex Desktop App     │ (wire_api = "responses")
-└────────────┬────────────┘
-             │ http://127.0.0.1:20128/v1
-             ▼
-┌─────────────────────────┐
-│     9Router Gateway     │ (Translates Responses API -> Chat Completions)
-└────────────┬────────────┘
-             │ POST /v1/chat/completions
-             ▼
-┌─────────────────────────┐
-│  Upstream Provider API  │ (e.g., CodexEverywhere, OpenRouter, DeepSeek, etc.)
-└─────────────────────────┘
-```
+> [!WARNING]
+> **Security & Privacy Note:**
+> Using third-party / unofficial API providers can carry security risks. Routing traffic through your local **9Router** acts as an isolation barrier: it protects your real OpenAI session tokens, blocks telemetry leakage, and keeps third-party keys out of your main environment.
 
 ---
 
-## ⚙️ Working Configuration Files
+## 🛠️ Step-by-Step Setup
 
-### 1. Codex Configuration (`~/.codex/config.toml`)
+### Step 1: Configure 9Router Provider Node
 
-Location:
-- **Windows:** `%USERPROFILE%\.codex\config.toml` (e.g. `C:\Users\<Username>\.codex\config.toml`)
+In your 9Router Web Dashboard (`http://localhost:20128`):
+
+1. Go to **Providers** -> **Add Custom Provider** (OpenAI-compatible).
+2. **Name:** `CodexEverywhere`
+3. **Prefix:** `ce`
+4. **Base URL:** `https://codex-easy.ai/v1`
+5. **API Type / Protocol:** **`Chat`** *(Crucial: Do NOT select 'Responses')*
+6. **API Key:** `<YOUR_CODEX_EVERYWHERE_API_KEY>`
+
+---
+
+### Step 2: Configure Codex (`config.toml`)
+
+File location:
+- **Windows:** `%USERPROFILE%\.codex\config.toml`
 - **macOS / Linux:** `~/.codex/config.toml`
+
+Add or replace the following sections:
 
 ```toml
 model_provider = "9router"
 model = "ce/gpt-5.6-terra"
-model_catalog_json = 'C:\Users\<Username>\.codex\model_catalog.json'
+model_catalog_json = 'C:\Users\<YOUR_USERNAME>\.codex\model_catalog.json'
 requires_openai_auth = false
 
 [model_providers.9router]
@@ -55,11 +52,12 @@ default_subagent_model = "ce/gpt-5.6-terra"
 
 ---
 
-### 2. Custom Model Catalog (`~/.codex/model_catalog.json`)
+### Step 3: Create Custom Model Catalog (`model_catalog.json`)
 
-To display clean, customized model names in the Codex UI dropdown (instead of a generic `"Custom"` label), define your models in `model_catalog.json`.
+File location:
+`%USERPROFILE%\.codex\model_catalog.json`
 
-> **Important:** Codex uses strict internal Rust deserialization. Each model object **must** include `supported_reasoning_levels`, `shell_type`, `priority`, and instruction template metadata to avoid crashing the startup routine.
+Paste this JSON to enable custom model names in the Codex UI dropdown:
 
 ```json
 {
@@ -153,7 +151,7 @@ To display clean, customized model names in the Codex UI dropdown (instead of a 
     {
       "slug": "ce/gpt-5.6-luna",
       "display_name": "GPT-5.6 Luna",
-      "description": "Fast & intelligent everyday coding via 9Router",
+      "description": "Fast everyday coding via 9Router",
       "default_reasoning_level": "medium",
       "supported_reasoning_levels": [
         { "effort": "low", "description": "Fast responses with lighter reasoning" },
@@ -198,44 +196,26 @@ To display clean, customized model names in the Codex UI dropdown (instead of a 
 
 ---
 
-### 3. Local Auth Safety Net (`~/.codex/auth.json`)
+### Step 4: Lock Down Auth (`auth.json`)
 
-Prevent Codex from silently making direct cloud fallback requests around 9Router:
+File location:
+`%USERPROFILE%\.codex\auth.json`
+
+Set your 9Router local key here to prevent Codex from making direct unproxied cloud requests:
 
 ```json
 {
-  "OPENAI_API_KEY": "sk-5e80ddbe7401abd4-3lwsxb-9fbd47b5"
+  "OPENAI_API_KEY": "<YOUR_9ROUTER_LOCAL_KEY>"
 }
 ```
 
 ---
 
-## 🛠️ Hiccups & Solutions Reference
+## ⚡ Common Errors & Fixes
 
-### 1. `400 Bad Request: {"error":{"message":"Bad Request","type":"upstream_error"}}`
-- **Root Cause:** Upstream endpoints (like `codex-easy.ai`) only support `/v1/chat/completions` and reject `/v1/responses`.
-- **Solution:** In the 9Router Web Dashboard (`http://localhost:20128`), edit your Provider Node and set **API Type** to **`Chat`** (`chat` / `chat/completions`). Keep `wire_api = "responses"` in Codex's `config.toml`. 9Router will handle the protocol translation automatically.
-
----
-
-### 2. App Stuck on *"Windows setup didn't finish • config_load"*
-- **Root Cause:** Incomplete `model_catalog.json` schema. Codex's strict Rust parser requires all model fields (`supported_reasoning_levels`, `shell_type`, `priority`, instruction templates).
-- **Solution:** Use the complete `model_catalog.json` structure provided above and run `codex doctor` to verify before launching the desktop GUI.
-
----
-
-### 3. Multiple Requests Logged per Single Prompt (e.g. Luna + Terra)
-- **Root Cause:** Codex Desktop automatically runs background helper tasks for thread title generation, ambient suggestions, and memories using the configured `default_subagent_model` / default `model`.
-- **Solution:** Set `default_subagent_model = "ce/gpt-5.6-terra"` in `config.toml` to unify your active and background models.
-
----
-
-### 4. Direct Cloud Bypasses
-- **Root Cause:** Leaving direct cloud API keys in `~/.codex/auth.json` allows Codex to fall back to direct cloud requests during default sessions.
-- **Solution:** Replace keys in `auth.json` with your local 9Router key.
-
----
-
-## 📄 License
-
-MIT License. Free to use and share with the AI coding community!
+| Issue / Error | Root Cause | Fix |
+| :--- | :--- | :--- |
+| **`400: Bad Request (upstream_error)`** | Upstream only supports `/v1/chat/completions`, but node was set to `Responses`. | Set **API Type** to **`Chat`** in 9Router node settings. Keep `wire_api = "responses"` in Codex. |
+| **App stuck on *"Windows setup didn't finish • config_load"*** | Incomplete `model_catalog.json` schema missing fields like `supported_reasoning_levels` or `shell_type`. | Use the full JSON schema from Step 3 above. Verify with `codex doctor`. |
+| **Model shows as generic `"Custom"` in UI** | Model slug is missing from `model_catalog.json`. | Add model slug with `"visibility": "list"` into `model_catalog.json`. |
+| **Direct cloud requests bypassing 9Router** | Third-party key still present in `auth.json`. | Replace key in `auth.json` with your local 9Router key. |

@@ -50,19 +50,44 @@ default_subagent_model = "ce/gpt-5.6-terra"
 
 ---
 
-### Step 3: Minimal Model Catalog (`model_catalog.json`)
+### Step 3: Custom Model Catalog (`model_catalog.json`)
 
 File location:
 `%USERPROFILE%\.codex\model_catalog.json`
 
-Paste this minimal, validated JSON (only the 11 strictly required fields per model):
+> [!IMPORTANT]
+> **What is MUST vs. What is CUSTOMIZABLE:**
+> Codex's internal Rust deserializer strictly requires all **11 keys** below. If any key is missing, Codex will crash on startup with `"Windows setup didn't finish • config_load"`.
+> 
+> * **DO NOT delete any lines.**
+> * **Only modify the values marked with `[CUSTOMIZABLE]` comments below.**
+> *(Note: Standard JSON does not support comments; remove `// ...` comments before saving into your `model_catalog.json`)*.
 
-```json
+```jsonc
 {
   "models": [
     {
-      "slug": "ce/gpt-5.6-terra",
-      "display_name": "GPT-5.6 Terra",
+      "slug": "ce/gpt-5.6-terra",                 // [CUSTOMIZABLE] Model ID with prefix (e.g. ce/<model-name>)
+      "display_name": "GPT-5.6 Terra",           // [CUSTOMIZABLE] Clean label shown in Codex UI dropdown
+      "supported_reasoning_levels": [             // [MANDATORY BOILERPLATE - DO NOT REMOVE]
+        { "effort": "low", "description": "low" },
+        { "effort": "medium", "description": "medium" },
+        { "effort": "high", "description": "high" }
+      ],
+      "shell_type": "unified_exec",               // [MANDATORY] Must remain "unified_exec"
+      "visibility": "list",                       // [MANDATORY] Must remain "list"
+      "supported_in_api": true,                   // [MANDATORY] Must remain true
+      "priority": 1,                              // [CUSTOMIZABLE] Dropdown sort order (1 = top)
+      "model_messages": {                         // [MANDATORY BOILERPLATE - DO NOT REMOVE]
+        "instructions_template": "You are Codex, a coding assistant."
+      },
+      "support_verbosity": true,                  // [MANDATORY] Must remain true
+      "truncation_policy": { "mode": "tokens", "limit": 10000 }, // [MANDATORY]
+      "experimental_supported_tools": []          // [MANDATORY] Must remain empty array []
+    },
+    {
+      "slug": "ce/gpt-5.6-sol",                   // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Sol",             // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
@@ -71,7 +96,7 @@ Paste this minimal, validated JSON (only the 11 strictly required fields per mod
       "shell_type": "unified_exec",
       "visibility": "list",
       "supported_in_api": true,
-      "priority": 1,
+      "priority": 2,                              // [CUSTOMIZABLE]
       "model_messages": {
         "instructions_template": "You are Codex, a coding assistant."
       },
@@ -80,8 +105,8 @@ Paste this minimal, validated JSON (only the 11 strictly required fields per mod
       "experimental_supported_tools": []
     },
     {
-      "slug": "ce/gpt-5.6-sol",
-      "display_name": "GPT-5.6 Sol",
+      "slug": "ce/gpt-5.6-luna",                  // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Luna",            // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
@@ -90,26 +115,7 @@ Paste this minimal, validated JSON (only the 11 strictly required fields per mod
       "shell_type": "unified_exec",
       "visibility": "list",
       "supported_in_api": true,
-      "priority": 2,
-      "model_messages": {
-        "instructions_template": "You are Codex, a coding assistant."
-      },
-      "support_verbosity": true,
-      "truncation_policy": { "mode": "tokens", "limit": 10000 },
-      "experimental_supported_tools": []
-    },
-    {
-      "slug": "ce/gpt-5.6-luna",
-      "display_name": "GPT-5.6 Luna",
-      "supported_reasoning_levels": [
-        { "effort": "low", "description": "low" },
-        { "effort": "medium", "description": "medium" },
-        { "effort": "high", "description": "high" }
-      ],
-      "shell_type": "unified_exec",
-      "visibility": "list",
-      "supported_in_api": true,
-      "priority": 3,
+      "priority": 3,                              // [CUSTOMIZABLE]
       "model_messages": {
         "instructions_template": "You are Codex, a coding assistant."
       },
@@ -138,11 +144,32 @@ Set your 9Router local key here to prevent Codex from making direct unproxied cl
 
 ---
 
-## ⚡ Common Errors & Fixes
+## 🕵️‍♂️ The "Dual-Agent" Mystery: Why 9Router Logs Two Models per Prompt
+
+When testing a model like **`GPT-5.6 Terra`**, you might notice both **`gpt-5.6-terra`** AND **`gpt-5.6-luna`** appearing in 9Router's Recent Requests table simultaneously. 
+
+### Why this happens:
+On every single prompt, Codex Desktop dispatches **TWO parallel requests**:
+1. **Primary Turn (User Prompt):** Runs on whichever model you selected in the UI dropdown (e.g. `GPT-5.6 Terra`).
+2. **Background Helper Agent:** Codex automatically triggers a background agent to generate **thread titles**, **ambient suggestions**, and **memory summaries**. This background agent uses the default model set in `config.toml` (`default_subagent_model` / `model`).
+
+### The Solution:
+If you want both the main chat and all background helper tasks to use the same model, set `default_subagent_model` to match your active model in `config.toml`:
+```toml
+model = "ce/gpt-5.6-terra"
+
+[agents]
+default_subagent_model = "ce/gpt-5.6-terra"
+```
+
+---
+
+## ⚡ Common Errors & Fixes Reference Table
 
 | Issue / Error | Root Cause | Fix |
 | :--- | :--- | :--- |
 | **`400: Bad Request (upstream_error)`** | Upstream only supports `/v1/chat/completions`, but node was set to `Responses`. | Set **API Type** to **`Chat`** in 9Router node settings. Keep `wire_api = "responses"` in Codex. |
-| **App stuck on *"Windows setup didn't finish • config_load"*** | Incomplete `model_catalog.json` schema missing fields like `supported_reasoning_levels` or `shell_type`. | Use the 11-field minimal JSON schema from Step 3. Verify with `codex doctor`. |
+| **App stuck on *"Windows setup didn't finish • config_load"*** | Incomplete `model_catalog.json` schema missing any of the 11 required fields. | Use the 11-field schema from Step 3. Verify with `codex doctor`. |
 | **Model shows as generic `"Custom"` in UI** | Model slug is missing from `model_catalog.json`. | Add model slug with `"visibility": "list"` into `model_catalog.json`. |
 | **Direct cloud requests bypassing 9Router** | Third-party key still present in `auth.json`. | Replace key in `auth.json` with your local 9Router key. |
+| **Recent Requests shows unexpected model (e.g. Luna)** | Codex background subagent generated titles/suggestions using default model. | Set `default_subagent_model` in `config.toml` to match your primary model. |

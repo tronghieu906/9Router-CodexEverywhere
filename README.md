@@ -1,6 +1,8 @@
-# 🚀 9Router + CodexEverywhere Integration Guide
+# 🚀 9Router + CodexEverywhere
 
-A concise, step-by-step guide for routing **CodexEverywhere** models (e.g., `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.6-luna`) through **9Router** into the **OpenAI Codex Desktop App**.
+Work on my machine™
+
+A guide for routing **CodexEverywhere** models (e.g., `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.6-luna`) through **9Router** into the **OpenAI Codex Desktop App**.
 
 > [!WARNING]
 > **Security & Isolation Note:**

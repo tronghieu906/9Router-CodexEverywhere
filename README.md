@@ -33,7 +33,7 @@ File location:
 
 ```toml
 model_provider = "9router"
-model = "ce/gpt-5.6-terra"
+model = "ce/gpt-5.6-terra" // YOUR PREFERED MODEL
 model_catalog_json = 'C:\Users\<YOUR_USERNAME>\.codex\model_catalog.json'
 requires_openai_auth = false
 
@@ -70,7 +70,7 @@ File location:
   "models": [
     {
       "slug": "ce/gpt-5.6-terra",                 // [CUSTOMIZABLE] Model ID with prefix (e.g. ce/<model-name>)
-      "display_name": "GPT-5.6 Terra",           // [CUSTOMIZABLE] Clean label shown in Codex UI dropdown
+      "display_name": "GPT-5.6 Terra",            // [CUSTOMIZABLE] Clean label shown in Codex UI dropdown
       "supported_reasoning_levels": [             // [MANDATORY BOILERPLATE - DO NOT REMOVE]
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
@@ -89,7 +89,7 @@ File location:
     },
     {
       "slug": "ce/gpt-5.6-sol",                   // [CUSTOMIZABLE]
-      "display_name": "GPT-5.6 Sol",             // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Sol",              // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
@@ -108,7 +108,7 @@ File location:
     },
     {
       "slug": "ce/gpt-5.6-luna",                  // [CUSTOMIZABLE]
-      "display_name": "GPT-5.6 Luna",            // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Luna",             // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },

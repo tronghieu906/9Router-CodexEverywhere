@@ -1,20 +1,16 @@
 # 🚀 9Router + CodexEverywhere
 
-Work on my machine™
+## Work on my machine™
 
 A guide for routing **CodexEverywhere** models (e.g., `gpt-5.6-terra`, `gpt-5.6-sol`, `gpt-5.6-luna`) through **9Router** into the **OpenAI Codex Desktop App**.
-
-> [!WARNING]
-> **Security & Isolation Note:**
-> Using third-party / unofficial API providers can carry security and privacy risks. Routing traffic through your local **9Router** acts as an isolation barrier: it protects your real OpenAI session tokens, blocks telemetry leakage, and keeps third-party keys out of your main environment.
 
 ---
 
 ## 🛠️ Step-by-Step Setup
 
-### Step 1: Configure 9Router Provider Node
+### Step 1: 9Router Provider Node
 
-In your 9Router Web Dashboard (`http://localhost:20128`):
+In 9Router Dashboard (`http://localhost:20128`):
 
 1. Go to **Providers** -> **Add Custom Provider** (OpenAI-compatible).
 2. **Name:** `CodexEverywhere`
@@ -25,9 +21,10 @@ In your 9Router Web Dashboard (`http://localhost:20128`):
 
 ---
 
-### Step 2: Configure Codex (`config.toml`)
+### Step 2: Codex (`config.toml`)
 
 File location:
+
 - **Windows:** `%USERPROFILE%\.codex\config.toml`
 - **macOS / Linux:** `~/.codex/config.toml`
 
@@ -47,7 +44,7 @@ requires_openai_auth = false
 Authorization = "Bearer <YOUR_9ROUTER_LOCAL_KEY>"
 
 [agents]
-default_subagent_model = "ce/gpt-5.6-terra"
+default_subagent_model = "ce/gpt-5.6-terra" // YOUR PREFERED MODEL
 ```
 
 ---
@@ -60,9 +57,9 @@ File location:
 > [!IMPORTANT]
 > **What is MUST vs. What is CUSTOMIZABLE:**
 > Codex's internal Rust deserializer strictly requires all **11 keys** below. If any key is missing, Codex will crash on startup with `"Windows setup didn't finish • config_load"`.
-> 
-> * **DO NOT delete any lines.**
-> * **Only modify the values marked with `[CUSTOMIZABLE]` comments below.**
+>
+> - **DO NOT delete any lines.**
+> - **Only modify the values marked with `[CUSTOMIZABLE]` comments below.**
 > *(Note: Standard JSON does not support comments; remove `// ...` comments before saving into your `model_catalog.json`)*.
 
 ```jsonc
@@ -131,12 +128,10 @@ File location:
 
 ---
 
-### Step 4: Lock Down Auth (`auth.json`)
+### Step 4: `auth.json`
 
 File location:
 `%USERPROFILE%\.codex\auth.json`
-
-Set your 9Router local key here to prevent Codex from making direct unproxied cloud requests:
 
 ```json
 {
@@ -148,10 +143,12 @@ Set your 9Router local key here to prevent Codex from making direct unproxied cl
 
 ## 🕵️‍♂️ The "Dual-Agent" Mystery: Why 9Router Logs Two Models per Prompt
 
-When testing a model like **`GPT-5.6 Terra`**, you might notice both **`gpt-5.6-terra`** AND **`gpt-5.6-luna`** appearing in 9Router's Recent Requests table simultaneously. 
+When testing a model like **`GPT-5.6 Terra`**, you might notice both **`gpt-5.6-terra`** AND **`gpt-5.6-luna`** appearing in 9Router's Recent Requests table simultaneously.
 
-### Why this happens:
+### Why this happens
+
 On every single prompt, Codex Desktop dispatches **TWO parallel requests**:
+
 1. **Primary Turn (User Prompt):** Runs on whichever model you selected in the UI dropdown (e.g. `GPT-5.6 Terra`).
 2. **Background Helper Agent:** Codex automatically triggers a background agent to generate **thread titles**, **ambient suggestions**, and **memory summaries**. This background agent uses the default model set in `config.toml` (`default_subagent_model` / `model`).
 

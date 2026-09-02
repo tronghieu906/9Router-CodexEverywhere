@@ -50,143 +50,87 @@ default_subagent_model = "ce/gpt-5.6-luna"
 
 ---
 
-### Step 3: Custom Model Catalog (`model_catalog.json`)
+### Step 3: Minimal Model Catalog (`model_catalog.json`)
 
 File location:
 `%USERPROFILE%\.codex\model_catalog.json`
 
 > [!IMPORTANT]
-> **Full Plugin & Node REPL Support:**
-> This configuration includes all capability flags (`node_repl_disabled: false`, `include_plugin_usage_instructions: true`, and `include_skills_usage_instructions: true`) ensuring built-in features like Chrome browser control and tool execution function without `unsupported call: mcp__node_repl` errors.
+> **What is MUST vs. What is CUSTOMIZABLE:**
+> Codex's internal Rust deserializer strictly requires all keys below.
+> 
+> * **DO NOT delete any lines.**
+> * **Only modify values marked with `[CUSTOMIZABLE]` below.**
+> *(Note: Standard JSON does not support comments; remove `// ...` comments before saving)*.
 
-```json
+```jsonc
 {
   "models": [
     {
-      "slug": "ce/gpt-5.6-sol",
-      "display_name": "GPT-5.6 Sol",
-      "description": "High performance flagship model via 9Router",
-      "default_reasoning_level": "high",
-      "supported_reasoning_levels": [
-        { "effort": "low", "description": "Fast responses with lighter reasoning" },
-        { "effort": "medium", "description": "Balanced speed and reasoning depth" },
-        { "effort": "high", "description": "Greater reasoning depth for complex problems" },
-        { "effort": "xhigh", "description": "Extra high reasoning depth" }
+      "slug": "ce/gpt-5.6-sol",                   // [CUSTOMIZABLE] Model ID with prefix
+      "display_name": "GPT-5.6 Sol",             // [CUSTOMIZABLE] Clean label in UI
+      "supported_reasoning_levels": [             // [MANDATORY]
+        { "effort": "low", "description": "low" },
+        { "effort": "medium", "description": "medium" },
+        { "effort": "high", "description": "high" }
       ],
-      "shell_type": "unified_exec",
-      "visibility": "list",
-      "supported_in_api": true,
-      "priority": 1,
-      "additional_speed_tiers": [],
-      "service_tiers": [],
-      "availability_nux": null,
-      "upgrade": null,
-      "include_skills_usage_instructions": true,
-      "include_plugin_usage_instructions": true,
-      "include_apps_usage_instructions": true,
-      "default_reasoning_summary": "none",
-      "support_verbosity": true,
-      "default_verbosity": "low",
-      "apply_patch_tool_type": "freeform",
-      "web_search_tool_type": "text_and_image",
-      "truncation_policy": { "mode": "tokens", "limit": 10000 },
-      "supports_image_detail_original": true,
-      "context_window": 272000,
-      "max_context_window": 872000,
-      "comp_hash": "3000",
-      "effective_context_window_percent": 95,
-      "experimental_supported_tools": [],
-      "input_modalities": ["text", "image"],
-      "supports_search_tool": true,
-      "use_responses_lite": true,
-      "node_repl_auto_review_required": false,
-      "node_repl_disabled": false,
-      "tool_mode": "code_mode_only",
-      "multi_agent_version": "v2"
+      "shell_type": "unified_exec",               // [MANDATORY]
+      "visibility": "list",                       // [MANDATORY]
+      "supported_in_api": true,                   // [MANDATORY]
+      "priority": 1,                              // [CUSTOMIZABLE] (1 = Top in dropdown & background tasks)
+      "model_messages": {                         // [MANDATORY]
+        "instructions_template": "You are Codex, a coding assistant."
+      },
+      "support_verbosity": true,                  // [MANDATORY]
+      "truncation_policy": { "mode": "tokens", "limit": 10000 }, // [MANDATORY]
+      "experimental_supported_tools": [],         // [MANDATORY]
+      "node_repl_disabled": false,                // [MANDATORY] Enables Chrome control & Node tools
+      "include_plugin_usage_instructions": true,  // [MANDATORY] Enables plugins
+      "include_skills_usage_instructions": true   // [MANDATORY] Enables custom skills
     },
     {
-      "slug": "ce/gpt-5.6-terra",
-      "display_name": "GPT-5.6 Terra",
-      "description": "Deep reasoning & complex refactoring via 9Router",
-      "default_reasoning_level": "high",
+      "slug": "ce/gpt-5.6-terra",                 // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Terra",           // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
-        { "effort": "low", "description": "Fast responses with lighter reasoning" },
-        { "effort": "medium", "description": "Balanced speed and reasoning depth" },
-        { "effort": "high", "description": "Greater reasoning depth for complex problems" },
-        { "effort": "xhigh", "description": "Extra high reasoning depth" }
+        { "effort": "low", "description": "low" },
+        { "effort": "medium", "description": "medium" },
+        { "effort": "high", "description": "high" }
       ],
       "shell_type": "unified_exec",
       "visibility": "list",
       "supported_in_api": true,
-      "priority": 2,
-      "additional_speed_tiers": [],
-      "service_tiers": [],
-      "availability_nux": null,
-      "upgrade": null,
-      "include_skills_usage_instructions": true,
-      "include_plugin_usage_instructions": true,
-      "include_apps_usage_instructions": true,
-      "default_reasoning_summary": "none",
+      "priority": 2,                              // [CUSTOMIZABLE]
+      "model_messages": {
+        "instructions_template": "You are Codex, a coding assistant."
+      },
       "support_verbosity": true,
-      "default_verbosity": "low",
-      "apply_patch_tool_type": "freeform",
-      "web_search_tool_type": "text_and_image",
       "truncation_policy": { "mode": "tokens", "limit": 10000 },
-      "supports_image_detail_original": true,
-      "context_window": 272000,
-      "max_context_window": 872000,
-      "comp_hash": "3000",
-      "effective_context_window_percent": 95,
       "experimental_supported_tools": [],
-      "input_modalities": ["text", "image"],
-      "supports_search_tool": true,
-      "use_responses_lite": true,
-      "node_repl_auto_review_required": false,
       "node_repl_disabled": false,
-      "tool_mode": "code_mode_only",
-      "multi_agent_version": "v2"
+      "include_plugin_usage_instructions": true,
+      "include_skills_usage_instructions": true
     },
     {
-      "slug": "ce/gpt-5.6-luna",
-      "display_name": "GPT-5.6 Luna",
-      "description": "Fast & intelligent everyday coding via 9Router",
-      "default_reasoning_level": "medium",
+      "slug": "ce/gpt-5.6-luna",                  // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Luna",             // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
-        { "effort": "low", "description": "Fast responses with lighter reasoning" },
-        { "effort": "medium", "description": "Balanced speed and reasoning depth" },
-        { "effort": "high", "description": "Greater reasoning depth for complex problems" },
-        { "effort": "xhigh", "description": "Extra high reasoning depth" }
+        { "effort": "low", "description": "low" },
+        { "effort": "medium", "description": "medium" },
+        { "effort": "high", "description": "high" }
       ],
       "shell_type": "unified_exec",
       "visibility": "list",
       "supported_in_api": true,
-      "priority": 3,
-      "additional_speed_tiers": [],
-      "service_tiers": [],
-      "availability_nux": null,
-      "upgrade": null,
-      "include_skills_usage_instructions": true,
-      "include_plugin_usage_instructions": true,
-      "include_apps_usage_instructions": true,
-      "default_reasoning_summary": "none",
+      "priority": 3,                              // [CUSTOMIZABLE]
+      "model_messages": {
+        "instructions_template": "You are Codex, a coding assistant."
+      },
       "support_verbosity": true,
-      "default_verbosity": "low",
-      "apply_patch_tool_type": "freeform",
-      "web_search_tool_type": "text_and_image",
       "truncation_policy": { "mode": "tokens", "limit": 10000 },
-      "supports_image_detail_original": true,
-      "context_window": 272000,
-      "max_context_window": 872000,
-      "comp_hash": "3000",
-      "effective_context_window_percent": 95,
       "experimental_supported_tools": [],
-      "input_modalities": ["text", "image"],
-      "supports_search_tool": true,
-      "use_responses_lite": true,
-      "node_repl_auto_review_required": false,
       "node_repl_disabled": false,
-      "tool_mode": "code_mode_only",
-      "multi_agent_version": "v2"
+      "include_plugin_usage_instructions": true,
+      "include_skills_usage_instructions": true
     }
   ]
 }
@@ -226,7 +170,7 @@ When testing a model like **`GPT-5.6 Terra`**, you might notice both **`gpt-5.6-
 | Issue / Error | Root Cause | Fix |
 | :--- | :--- | :--- |
 | **`400: Bad Request (upstream_error)`** | Upstream only supports `/v1/chat/completions`, but node was set to `Responses`. | Set **API Type** to **`Chat`** in 9Router node settings. Keep `wire_api = "responses"` in Codex. |
-| **`unsupported call: mcp__node_repl`** | Custom model catalog omitted `node_repl_disabled: false` or plugin instruction flags. | Use the full-capability catalog schema from Step 3. |
-| **App stuck on *"Windows setup didn't finish • config_load"*** | Incomplete `model_catalog.json` schema missing struct keys. | Use the complete JSON schema from Step 3. Verify with `codex doctor`. |
+| **`unsupported call: mcp__node_repl`** | Missing `node_repl_disabled: false` or plugin instruction flags. | Add `node_repl_disabled: false` and `include_plugin_usage_instructions: true` from Step 3. |
+| **App stuck on *"Windows setup didn't finish • config_load"*** | Incomplete `model_catalog.json` schema missing struct keys. | Use the clean JSON schema from Step 3. Verify with `codex doctor`. |
 | **Model shows as generic `"Custom"` in UI** | Model slug is missing from `model_catalog.json`. | Add model slug with `"visibility": "list"` into `model_catalog.json`. |
 | **Direct cloud requests bypassing 9Router** | Third-party key still present in `auth.json`. | Replace key in `auth.json` with your local 9Router key. |

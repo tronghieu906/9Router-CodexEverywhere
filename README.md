@@ -66,8 +66,8 @@ File location:
 {
   "models": [
     {
-      "slug": "ce/gpt-5.6-sol",                 // [CUSTOMIZABLE] Model ID with prefix (e.g. ce/<model-name>)
-      "display_name": "GPT-5.6 Sol",            // [CUSTOMIZABLE] Clean label shown in Codex UI dropdown
+      "slug": "ce/gpt-5.6-luna",                   // [CUSTOMIZABLE] Model ID with prefix (e.g. ce/<model-name>)
+      "display_name": "GPT-5.6 Luna",              // [CUSTOMIZABLE] Clean label shown in Codex UI dropdown
       "supported_reasoning_levels": [             // [MANDATORY BOILERPLATE - DO NOT REMOVE]
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
@@ -85,8 +85,8 @@ File location:
       "experimental_supported_tools": []          // [MANDATORY] Must remain empty array []
     },
     {
-      "slug": "ce/gpt-5.6-terra",                   // [CUSTOMIZABLE]
-      "display_name": "GPT-5.6 Terra",              // [CUSTOMIZABLE]
+      "slug": "ce/gpt-5.6-terra",                 // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Terra",            // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
@@ -104,8 +104,8 @@ File location:
       "experimental_supported_tools": []
     },
     {
-      "slug": "ce/gpt-5.6-luna",                  // [CUSTOMIZABLE]
-      "display_name": "GPT-5.6 Luna",             // [CUSTOMIZABLE]
+      "slug": "ce/gpt-5.6-sol",                  // [CUSTOMIZABLE]
+      "display_name": "GPT-5.6 Sol",             // [CUSTOMIZABLE]
       "supported_reasoning_levels": [
         { "effort": "low", "description": "low" },
         { "effort": "medium", "description": "medium" },
